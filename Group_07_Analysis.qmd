@@ -59,14 +59,84 @@ glimpse(data)
 ```
 
 ```{r}
-# Summary statistics for each variable
-summary_stats <- summary(data)
-print(summary_stats)
+data$length_log <- log1p(data$length)
+data$votes_log <- log1p(data$votes)
 ```
+
+
+```{r}
+# Calculate the proportion of outliers for each numeric variable
+# Defining the function to calculate the proportion of outliers
+calculate_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  num_outliers <- sum(x < lower_bound | x > upper_bound, na.rm = TRUE)
+  total_values <- sum(!is.na(x))
+  proportion_outliers <- num_outliers / total_values
+  return(proportion_outliers)
+}
+
+# Apply the function only to 'length', 'budget', and 'votes' columns
+selected_columns <- c("length", "budget", "votes")
+outlier_proportions <- sapply(data[selected_columns], calculate_outliers)
+
+# Convert the proportions to a data frame for easier reading
+outlier_table <- as.data.frame(t(outlier_proportions), row.names = "Proportion of Outliers")
+outlier_table
+```
+
+```{r}
+# Calculate the proportion of outliers for each numeric variable
+# Defining the function to calculate the proportion of outliers
+calculate_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  num_outliers <- sum(x < lower_bound | x > upper_bound, na.rm = TRUE)
+  total_values <- sum(!is.na(x))
+  proportion_outliers <- num_outliers / total_values
+  return(proportion_outliers)
+}
+
+# Apply the function only to 'length', 'budget', and 'votes' columns
+selected_columns <- c("length", "budget", "votes")
+outlier_proportions <- sapply(data[selected_columns], calculate_outliers)
+
+# Convert the proportions to a data frame for easier reading
+outlier_table <- as.data.frame(t(outlier_proportions), row.names = "Proportion of Outliers")
+outlier_table
+```
+```
+
+
+```{r}
+calculate_and_print_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25, na.rm = TRUE)
+  Q3 <- quantile(x, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  outliers <- x[x < lower_bound | x > upper_bound]
+  return(outliers)
+}
+
+# Apply the modified function only to 'length', 'budget', and 'votes' columns
+selected_columns <- c("length", "budget", "votes")
+list_outliers <- lapply(data[selected_columns], calculate_and_print_outliers)
+
+# Print the actual outliers for each variable
+list_outliers
+```
+
 
 ```{r fig.width=6, fig.height=8}
 # List of numeric variables
-numeric_vars <- c("year", "length", "budget", "votes", "rating")
+numeric_vars <- c("year", "length", "budget", "votes")
 
 # Titles and x-axis labels for the histograms
 titles <- c("Distribution of Years", "Distribution of Film Lengths",
@@ -83,7 +153,26 @@ par(mfrow = c(1, 1)) # Reset to default layout
 ```
 
 ```{r fig.width=6, fig.height=8}
-numeric_vars <- c("year", "length", "budget", "votes", "rating")
+# List of numeric variables
+numeric_vars <- c("year", "length_log", "budget", "votes_log")
+
+# Titles and x-axis labels for the histograms
+titles <- c("Distribution of Years", "Distribution of log(Film Lengths)",
+            "Distribution of Budgets", "Distribution of log(Votes)")
+x_labels <- c("Year", "Length (minutes)", "Budget (millions $)", "Votes", "Rating")
+
+# Loop through numeric variables to create histograms
+par(mfrow = c(3, 2)) # Adjust grid layout based on number of variables
+for (i in 1:length(numeric_vars)) {
+  hist(data[[numeric_vars[i]]], main = titles[i], xlab = x_labels[i], border = 'white')
+}
+par(mfrow = c(1, 1)) # Reset to default layout
+
+```
+
+
+```{r fig.width=6, fig.height=8}
+numeric_vars <- c("year", "length", "budget", "votes")
 # Set up plotting area
 par(mfrow = c(3, 2))  # Adjust dimensions as necessary based on the number of variables
 
@@ -98,14 +187,25 @@ par(mfrow = c(1, 1))
 ```
 
 ```{r}
+# Set up the layout for multiple plots (1 row, 2 columns)
+par(mfrow = c(1, 2))  # Adjust layout as needed
+
 # Bar plot for genre
 genre_counts <- table(data$genre)
 barplot(genre_counts, main = "Film Counts by Genre", xlab = "Genre", ylab = "Count", las = 2)
+
+# Bar plot for above_7
+above7_counts <- table(data$above_7)
+barplot(above7_counts, main = "Film Counts by Above 7", xlab = "Above 7", ylab = "Count", las = 2)
+
+# Reset to default layout
+par(mfrow = c(1, 1))
 ```
+
 
 ```{r}
 # Pairwise correlation between numeric variables
-numeric_data <- dplyr::select(data, -film_id, -genre, -above_7)  # Remove non-numeric and unnecessary columns for correlation
+numeric_data <- dplyr::select(data, -film_id, -genre, -above_7, -rating)  # Remove non-numeric and unnecessary columns for correlation
 cor_matrix <- cor(numeric_data, use = "complete.obs")  # Compute correlation matrix
 corrplot(cor_matrix, type = "upper", order = "hclust", 
          tl.cex = 0.6, tl.col = "black", addCoef.col = "blue") 
@@ -142,8 +242,6 @@ barplot(genre_proportions, legend = TRUE,
 # Formal Data Analysis {#sec-FDA}
 ```{r}
 data_clean <- dplyr::select(data, -film_id, -rating)
-data_clean$length_log <- log1p(data_clean$length)
-data_clean$votes_log <- log1p(data_clean$votes)
 ```
 
 ```{r}
@@ -155,93 +253,62 @@ test_data <- data_clean[-index, ]
 ```
 
 ```{r}
-#Test the full model without processing
-glm_model <- glm(above_7 ~ year + length + budget + votes + genre, 
-                 family = binomial, data = train_data)
-summary(glm_model)
-# Predict on the test data
-predictions <- predict(glm_model, test_data, type = "response")
-predicted_class <- ifelse(predictions > 0.32, 1, 0)
-conf_matrix <- confusionMatrix(factor(predicted_class), factor(test_data$above_7))
-accuracy <- conf_matrix$overall['Accuracy']
-sensitivity <- conf_matrix$byClass['Sensitivity']
-specificity <- conf_matrix$byClass['Specificity']
+# Define models
+# Original Model
+glm_model_orig <- glm(above_7 ~ year + length + budget + votes + genre, 
+                      family = binomial, data = train_data)
 
-# Print the metrics
-print(accuracy)
-print(sensitivity)
-print(specificity)
-roc_response <- roc(response = test_data$above_7, predictor = predictions)
-plot(roc_response)
-auc(roc_response)
+# Full Model with Log Transformation
+glm_model_log <- glm(above_7 ~ year + length_log + budget + votes_log + genre, 
+                     family = binomial, data = train_data)
+
+# Model without Year
+glm_model_no_year <- glm(above_7 ~ length_log + budget + votes_log + genre, 
+                        family = binomial, data = train_data)
+
+# Model without Year and Votes_log
+glm_model_no_year_votes <- glm(above_7 ~ length_log + budget + genre, 
+                               family = binomial, data = train_data)
 ```
 
 
 ```{r}
-#Full model with log transformation
-glm_model <- glm(above_7 ~ year + length_log + budget + votes_log + genre, 
-                 family = binomial, data = train_data)
-summary(glm_model)
-# Predict on the test data
-predictions <- predict(glm_model, test_data, type = "response")
-predicted_class <- ifelse(predictions > 0.32, 1, 0)
-conf_matrix <- confusionMatrix(factor(predicted_class), factor(test_data$above_7))
-accuracy <- conf_matrix$overall['Accuracy']
-sensitivity <- conf_matrix$byClass['Sensitivity']
-specificity <- conf_matrix$byClass['Specificity']
+# Modified evaluate_model function to return metrics
+evaluate_model <- function(model, test_data) {
+  predictions <- predict(model, test_data, type = "response")
+  predicted_class <- ifelse(predictions > 0.32, 1, 0)  # Classification threshold at 0.32
+  conf_matrix <- confusionMatrix(factor(predicted_class), factor(test_data$above_7))
+  roc_response <- roc(response = test_data$above_7, predictor = predictions)
+  
+  # Compile performance metrics
+  metrics <- list(
+    Accuracy = conf_matrix$overall['Accuracy'],
+    Sensitivity = conf_matrix$byClass['Sensitivity'],
+    Specificity = conf_matrix$byClass['Specificity'],
+    AUC = auc(roc_response), 
+    BIC = BIC(model)
+  )
+  
+  return(metrics)  # Return metrics for storage
+}
+# Assuming your models are named and your test_data is ready
+# Store metrics in a structured way
+metrics_list <- list()
+metrics_list[['Full Model']] <- evaluate_model(glm_model_orig, test_data)
+metrics_list[['Full model with Log']] <- evaluate_model(glm_model_log, test_data)
+metrics_list[['Model without Year']] <- evaluate_model(glm_model_no_year, test_data)
+metrics_list[['Model without Year and Votes']] <- evaluate_model(glm_model_no_year_votes, test_data)
 
-# Print the metrics
-print(accuracy)
-print(sensitivity)
-print(specificity)
-roc_response <- roc(response = test_data$above_7, predictor = predictions)
-plot(roc_response)
-auc(roc_response)
-```
+# Compile metrics into a summary table
+summary_table <- sapply(metrics_list, function(x) sapply(x, function(y) y))  # Collect metrics
+summary_table <- t(summary_table)  # Transpose to make rows correspond to models
+summary_table <- round(summary_table, 4)  # Round for readability
 
+# Setting the column names if they are not automatically set
+colnames(summary_table) <- c("Accuracy", "Sensitivity", "Specificity", "AUC", "BIC")
 
-```{r}
-# Remove year
-glm_model <- glm(above_7 ~ length_log + budget + votes_log + genre, 
-                 family = binomial, data = train_data)
-summary(glm_model)
-# Predict on the test data
-predictions <- predict(glm_model, test_data, type = "response")
-predicted_class <- ifelse(predictions > 0.32, 1, 0)
-conf_matrix <- confusionMatrix(factor(predicted_class), factor(test_data$above_7))
-accuracy <- conf_matrix$overall['Accuracy']
-sensitivity <- conf_matrix$byClass['Sensitivity']
-specificity <- conf_matrix$byClass['Specificity']
-
-# Print the metrics
-print(accuracy)
-print(sensitivity)
-print(specificity)
-roc_response <- roc(response = test_data$above_7, predictor = predictions)
-plot(roc_response)
-auc(roc_response)
-```
-
-```{r}
-# Remove year and votes_log
-glm_model <- glm(above_7 ~ length_log + budget + genre, 
-                 family = binomial, data = train_data)
-summary(glm_model)
-# Predict on the test data
-predictions <- predict(glm_model, test_data, type = "response")
-predicted_class <- ifelse(predictions > 0.32, 1, 0)
-conf_matrix <- confusionMatrix(factor(predicted_class), factor(test_data$above_7))
-accuracy <- conf_matrix$overall['Accuracy']
-sensitivity <- conf_matrix$byClass['Sensitivity']
-specificity <- conf_matrix$byClass['Specificity']
-
-# Print the metrics
-print(accuracy)
-print(sensitivity)
-print(specificity)
-roc_response <- roc(response = test_data$above_7, predictor = predictions)
-plot(roc_response)
-auc(roc_response)
+# Print the summary table
+summary_table
 ```
 
 # Conclusions {#sec-conc}

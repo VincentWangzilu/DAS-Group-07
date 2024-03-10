@@ -11,11 +11,13 @@ format:
 editor_options: 
   chunk_output_type: console
 execute:
-  echo: true
+  echo: false
   eval: true
   warning: false
   message: false
 ---
+
+# Introduction
 
 ```{r}
 #| label: libraries
@@ -31,16 +33,12 @@ library(caret)
 library(pROC)
 ```
 
+You can add options to executable code like this
+
 ```{r}
 #| label: data
 data <- read.csv("/Users/ziluwang/Documents/GitHub/DAS-Project2-Group7/dataset07.csv", na.strings = 'NA')
 ```
-
-# Introduction {#sec-intro}
-
-Introduction paragraph
-
-# Exploratory Data Analysis {#sec-EDA}
 
 ```{r}
 # Check for missing values
@@ -54,8 +52,15 @@ data$length[is.na(data$length)] <- median(data$length, na.rm = TRUE)
 data$above_7 <- ifelse(data$rating > 7, 1, 0)
 ```
 
+# EDA
+
 ```{r}
 glimpse(data)
+```
+
+```{r}
+# Statistical Summary
+summary(data)
 ```
 
 ```{r}
@@ -63,7 +68,6 @@ data$length_log <- log1p(data$length)
 data$votes_log <- log1p(data$votes)
 ```
 
-
 ```{r}
 # Calculate the proportion of outliers for each numeric variable
 # Defining the function to calculate the proportion of outliers
@@ -104,15 +108,13 @@ calculate_outliers <- function(x) {
 }
 
 # Apply the function only to 'length', 'budget', and 'votes' columns
-selected_columns <- c("length", "budget", "votes")
+selected_columns <- c("length_log", "budget", "votes_log")
 outlier_proportions <- sapply(data[selected_columns], calculate_outliers)
 
 # Convert the proportions to a data frame for easier reading
 outlier_table <- as.data.frame(t(outlier_proportions), row.names = "Proportion of Outliers")
 outlier_table
 ```
-```
-
 
 ```{r}
 calculate_and_print_outliers <- function(x) {
@@ -133,8 +135,7 @@ list_outliers <- lapply(data[selected_columns], calculate_and_print_outliers)
 list_outliers
 ```
 
-
-```{r fig.width=6, fig.height=8}
+```{r}
 # List of numeric variables
 numeric_vars <- c("year", "length", "budget", "votes")
 
@@ -144,15 +145,14 @@ titles <- c("Distribution of Years", "Distribution of Film Lengths",
 x_labels <- c("Year", "Length (minutes)", "Budget (millions $)", "Votes", "Rating")
 
 # Loop through numeric variables to create histograms
-par(mfrow = c(3, 2)) # Adjust grid layout based on number of variables
+par(mfrow = c(2, 2)) # Adjust grid layout based on number of variables
 for (i in 1:length(numeric_vars)) {
   hist(data[[numeric_vars[i]]], main = titles[i], xlab = x_labels[i], border = 'white')
 }
 par(mfrow = c(1, 1)) # Reset to default layout
-
 ```
 
-```{r fig.width=6, fig.height=8}
+```{r}
 # List of numeric variables
 numeric_vars <- c("year", "length_log", "budget", "votes_log")
 
@@ -162,19 +162,17 @@ titles <- c("Distribution of Years", "Distribution of log(Film Lengths)",
 x_labels <- c("Year", "Length (minutes)", "Budget (millions $)", "Votes", "Rating")
 
 # Loop through numeric variables to create histograms
-par(mfrow = c(3, 2)) # Adjust grid layout based on number of variables
+par(mfrow = c(2, 2)) # Adjust grid layout based on number of variables
 for (i in 1:length(numeric_vars)) {
   hist(data[[numeric_vars[i]]], main = titles[i], xlab = x_labels[i], border = 'white')
 }
 par(mfrow = c(1, 1)) # Reset to default layout
-
 ```
 
-
-```{r fig.width=6, fig.height=8}
+```{r}
 numeric_vars <- c("year", "length", "budget", "votes")
 # Set up plotting area
-par(mfrow = c(3, 2))  # Adjust dimensions as necessary based on the number of variables
+par(mfrow = c(2, 2))  # Adjust dimensions as necessary based on the number of variables
 
 # Loop through numeric variables to create boxplots
 for (var in numeric_vars) {
@@ -202,7 +200,6 @@ barplot(above7_counts, main = "Film Counts by Above 7", xlab = "Above 7", ylab =
 par(mfrow = c(1, 1))
 ```
 
-
 ```{r}
 # Pairwise correlation between numeric variables
 numeric_data <- dplyr::select(data, -film_id, -genre, -above_7, -rating)  # Remove non-numeric and unnecessary columns for correlation
@@ -211,9 +208,9 @@ corrplot(cor_matrix, type = "upper", order = "hclust",
          tl.cex = 0.6, tl.col = "black", addCoef.col = "blue") 
 ```
 
-```{r fig.width=6, fig.height=8}
+```{r}
 # Set up the layout for multiple plots
-par(mfrow = c(3, 2))  # Adjust as necessary based on the number of variables
+par(mfrow = c(2, 2))  # Adjust as necessary based on the number of variables
 
 # Loop through numeric variables to create boxplots
 for (var in numeric_vars) {
@@ -239,8 +236,30 @@ barplot(genre_proportions, legend = TRUE,
         names.arg = colnames(genre_counts))  # Use column names of the original counts table
 ```
 
-# Formal Data Analysis {#sec-FDA}
 ```{r}
+# Boxplot of length grouped by genre
+boxplot(length ~ genre, data = data,
+        main = "Boxplot of Movie Length by Genre",
+        xlab = "Genre", ylab = "Length",
+        las = 2)  # Makes genre labels perpendicular for better readability
+
+# Boxplot of budget grouped by genre
+boxplot(budget ~ genre, data = data,
+        main = "Boxplot of Movie Budget by Genre",
+        xlab = "Genre", ylab = "Budget (millions $)",
+        las = 2)  # Makes genre labels perpendicular for better readability
+
+# Boxplot of budget grouped by genre
+boxplot(votes_log ~ genre, data = data,
+        main = "Boxplot of Log(Votes) by Genre",
+        xlab = "Genre", ylab = "Log(Votes)",
+        las = 2)  # Makes genre labels perpendicular for better readability
+```
+
+# Formal Analysis
+
+```{r}
+# Remove unwanted columns from dataset
 data_clean <- dplyr::select(data, -film_id, -rating)
 ```
 
@@ -270,7 +289,6 @@ glm_model_no_year <- glm(above_7 ~ length_log + budget + votes_log + genre,
 glm_model_no_year_votes <- glm(above_7 ~ length_log + budget + genre, 
                                family = binomial, data = train_data)
 ```
-
 
 ```{r}
 # Modified evaluate_model function to return metrics
@@ -311,8 +329,47 @@ colnames(summary_table) <- c("Accuracy", "Sensitivity", "Specificity", "AUC", "B
 summary_table
 ```
 
-# Conclusions {#sec-conc}
+```{r}
+summary(glm_model_no_year)
+```
 
+From the summary of the Generalized Linear Model (GLM) analysis, we can draw the following findings and conclusions:
 
+1.  **Length of Movies (length_log)**: There is a significant negative relationship between the log-transformed length of movies and their likelihood of being rated above 7. This suggests that longer movies are less likely to receive high ratings, potentially indicating viewer preferences for shorter films or perhaps an association with certain film types or genres that are longer but less popular.
 
-# Reference {#sec-ref}
+2.  **Budget (budget)**: The budget of a movie shows a significant positive association with the likelihood of being rated above 7. This might imply that higher-budget movies, which can afford better production quality, actors, and marketing, are more likely to be well-received by audiences.
+
+3.  **Votes (votes_log)**: The log-transformed number of votes is positively correlated with a movie being rated above 7. This indicates that movies that engage more viewers to vote are likely to have higher ratings. It could reflect higher viewer engagement or broader appreciation.
+
+4.  **Genre Differences**:
+
+    -   **Animation**: Compared to the baseline genre, animation films are significantly less likely to be rated above 7. This could reflect specific audience preferences or the standards by which animation is judged.
+    -   **Comedy and Documentary**: These genres show a significant positive association with higher ratings, suggesting they are generally well-received or cater to specific audience segments that rate them favorably.
+    -   **Drama**: Dramas are less likely to score above 7, indicating perhaps a critical standard or audience expectation that is harder to meet.
+    -   **Romance and Short**: These genres do not show significant effects, possibly due to a smaller sample size, less variation in ratings, or other model limitations.
+
+5.  **Model Performance**:
+
+    -   The model has demonstrated high accuracy (88.55%), indicating a strong ability to classify films correctly as having ratings above or below 7. This level of accuracy suggests that the variables chosen, including movie length, budget, number of votes, and genre, are significant indicators of a film's rating performance.
+    -   Sensitivity (88.71%) and specificity (88.21%) values are both high, showing that the model is proficient not only in identifying true positives (correctly predicting films rated above 7) but also in recognizing true negatives (correctly predicting films not rated above 7). This balance is crucial for ensuring the model's reliability across different film scenarios.
+    -   The AUC (Area Under the Curve) of 0.9457 signifies excellent model discrimination ability, meaning it has a high capability in distinguishing between films rated above 7 and those that are not.
+
+6.  **Model Fit and Data Quality**:
+
+    -   The substantial gap between null and residual deviance indicates that the model fits the data well beyond a mere intercept-only model.
+    -   However, the BIC of 950.4586, while providing a measure of model quality, suggests room for improvement or simplification, considering it penalizes complex models. The relatively high BIC compared to the model's predictive success (e.g., AUC) indicates that while the model is effective, it could be made more efficient or tailored.
+
+7.  **Practical Implications**:
+
+    -   Filmmakers and producers can leverage insights from this model, particularly around film length, budget, and targeted genre, to optimize their projects for higher audience ratings.
+    -   The significant predictors offer a blueprint for aligning movie projects with characteristics correlated with success, though considerations of artistic intent and narrative integrity remain paramount.
+
+8.  **Further Research and Limitations**:
+
+    -   The disparities observed in genre impacts necessitate deeper investigation, potentially requiring broader datasets to ensure nuanced understandings.
+    -   While the GLM offers robust insights, it's essential to remember that correlation does not guarantee causation; additional factors not included in the model may influence movie ratings.
+    -   Future research should address the data limitations, particularly for underrepresented genres, and explore external factors beyond the scope of the current model to provide a more comprehensive understanding.
+
+**Conclusions**: - The results suggest that specific attributes associated with movies, such as their duration, budget, and genre, significantly influence their ratings. - However, the effect of genre on movie ratings can vary widely, indicating that audience preferences and perceptions can differ markedly between different types of films. - The significant predictors in this model can be leveraged by filmmakers and producers to align their projects more closely with attributes associated with higher-rated films. However, it's essential to approach these findings with a nuanced understanding that correlation does not imply causation, and other unmeasured factors could also be influencing movie ratings. - The anomalies observed for certain genres highlight the need for further investigation, potentially with a larger or more balanced dataset, to understand these relationships better.
+
+Overall, while log transformations and GLM have provided meaningful insights, it's crucial to consider these findings within the broader context of movie production and audience reception, and where possible, to validate these conclusions with additional data or through experimental approaches.

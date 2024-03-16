@@ -54,8 +54,15 @@ data <- read.csv("/Users/ziluwang/Documents/GitHub/DAS-Project2-Group7/dataset07
 ```
 
 ```{r}
-# Check for missing values
-#colSums(is.na(data))
+#dim(data)
+```
+
+```{r}
+#colnames(data)
+```
+
+```{r}
+colSums(is.na(data)
 ```
 
 ```{r}
@@ -713,6 +720,9 @@ These findings provide valuable insights into the multifaceted nature of film su
 This study highlights key factors influencing audience ratings: film length, budget, and genre. Findings suggest filmmakers should focus on concise storytelling, invest in production quality, and select genres wisely to enhance film success. This also impacts marketing strategies, advocating for targeted campaigns, especially for niche genres like documentaries.
 
 ## Limitation
+
+Genre imbalance in a dataset can skew predictive modeling and result in biased outcomes, especially towards overrepresented genres. This leads to misinterpretation of results, reduced model generalization, and potential overfitting, undermining the model's effectiveness across diverse film types. Underrepresented genres suffer from insufficient data, leading to poor predictive accuracy and missed opportunities for insights. Addressing this imbalance is crucial for equitable and accurate analysis, ensuring that models capture a comprehensive view of factors contributing to movie success across all genres.
+
 One limitation of of this analysis is the imbalance of genres in the data set, which can potentially skew predictive modeling and result in biased outcomes, especially towards over-represented genres.
 
 ## Future Research

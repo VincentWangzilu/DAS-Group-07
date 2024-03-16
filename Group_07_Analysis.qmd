@@ -31,13 +31,13 @@ execute:
 
 # Introduction
 
-  In the evolving landscape of cinematic entertainment, the question of what factors lead a film to be favorably received by audiences has intrigued producers, directors, and marketers alike. This project, titled "Behind the Curtain: Statistical Insights into Movie Success" embarks on a statistical journey to decipher the complex dynamics between various film attributes and their resulting viewer ratings, specifically focusing on the critical threshold of a rating above 7, often considered a benchmark for success in the industry.
+In the evolving landscape of cinematic entertainment, the question of what factors lead a film to be favorably received by audiences has intrigued producers, directors, and marketers alike. This project, titled "Behind the Curtain: Statistical Insights into Movie Success" embarks on a statistical journey to decipher the complex dynamics between various film attributes and their resulting viewer ratings, specifically focusing on the critical threshold of a rating above 7, often considered a benchmark for success in the industry.
 
-  The inception of this analysis is rooted in the premise that a film's length, budget, viewer engagement (measured through votes), and genre hold significant sway over its overall reception. Traditionally, the entertainment industry has relied on anecdotal evidence or isolated case studies to gauge the potential success of film projects. However, this project leverages a Generalized Linear Model (GLM) to evaluate these factors, offering a more empirical basis for understanding cinematic success.
+The inception of this analysis is rooted in the premise that a film's length, budget, viewer engagement (measured through votes), and genre hold significant sway over its overall reception. Traditionally, the entertainment industry has relied on anecdotal evidence or isolated case studies to gauge the potential success of film projects. However, this project leverages a Generalized Linear Model (GLM) to evaluate these factors, offering a more empirical basis for understanding cinematic success.
 
-  The data set comprises diverse films spanning various years, genres, and production scales, enabling a comprehensive analysis that transcends specific market trends or cultural biases. By employing a generalized linear regression framework, we aim to predict the likelihood of a film achieving a rating above 7, transforming subjective notions of quality and appeal into quantifiable probabilities. The selection of variables such as 'length', 'budget', and 'votes' is predicated on the hypothesis that these factors collectively encapsulate elements of narrative compactness, production quality, and audience engagement—each a potential predictor of a film's rating.
+The data set comprises diverse films spanning various years, genres, and production scales, enabling a comprehensive analysis that transcends specific market trends or cultural biases. By employing a generalized linear regression framework, we aim to predict the likelihood of a film achieving a rating above 7, transforming subjective notions of quality and appeal into quantifiable probabilities.
 
-  As we navigate through this project, the goal is to distill actionable insights that can guide filmmakers and studios in crafting content that resonates with viewers. Beyond its immediate application, this study contributes to the broader discourse on the quantification of artistic and entertainment value, marking a confluence of creativity and analytics.
+Through this project, the goal is to distill actionable insights that can guide filmmakers and studios in crafting content that resonates with viewers. Beyond its immediate application, this study contributes to the broader discourse on the quantification of artistic and entertainment value, marking a confluence of creativity and analytics.
 
 ```{r}
 #| label: libraries
@@ -54,7 +54,6 @@ library(pROC)
 ```
 
 ```{r}
-#| label: data
 data <- read.csv("/Users/ziluwang/Documents/GitHub/DAS-Project2-Group7/dataset07.csv", na.strings = 'NA')
 ```
 
@@ -80,21 +79,17 @@ The methodology of the project involves a systematic approach to understanding t
 
 An extensive Exploratory Data Analysis (EDA) is conducted to gain deeper insights into underlying patterns and relationships. This includes examining the distributions of key variables, identifying outliers, and assessing correlations.
 
-The analysis then employs a Generalized Linear Model (GLM), specifically logistic regression, to examine the influence of various film attributes—namely, length, budget, viewer engagement (votes), and genre—on the likelihood of a film receiving a rating above 7, which is considered indicative of success. The model's predictive power and fit are assessed through accuracy, sensitivity, specificity, and the Area Under the Receiver Operating Characteristic (ROC) Curve (AUC) metrics.
+The analysis then employs a Generalized Linear Model (GLM), specifically logistic regression, to examine the influence of various film attributes on the likelihood of a film receiving a rating above 7, which is considered indicative of success. The model's predictive power and fit are assessed through accuracy, sensitivity, specificity, and the Area Under the Receiver Operating Characteristic (ROC) Curve (AUC) metrics.
 
 To fine-tune the model, a series of candidate thresholds for classification are evaluated to identify the optimal balance between sensitivity and specificity. This involves calculating performance metrics across different threshold values and selecting the one that provides the best compromise according to the project's objectives.
 
-The methodology also encompasses residual analysis to evaluate the model's assumptions and the fit to the data, ensuring the reliability and validity of the findings. Finally, based on the insights gained from the EDA and GLM analysis, strategic recommendations are formulated to guide filmmakers and producers in aligning their projects with the attributes associated with higher-rated films.
+The methodology also encompasses evaluation of the model's assumptions and the fit to the data, ensuring the reliability and validity of the findings. Finally, based on the insights gained from the EDA and GLM analysis, strategic recommendations are formulated to guide filmmakers and producers in aligning their projects with the attributes associated with higher-rated films.
 
 # Exploratory Data Anlaysis
 
 ## Statistical Summary
 
 ```{r}
-# Load necessary libraries
-library(tidyverse)
-library(gt)
-
 # Define the specific variables for the summary
 selected_vars <- c("year", "length", "budget", "votes", "rating")
 
@@ -187,8 +182,6 @@ data$votes_log <- log1p(data$votes)
 **Proportions of outliers for each numeric variable**
 
 ```{r}
-# Calculate the proportion of outliers for each numeric variable
-
 # Defining the function to calculate the proportion of outliers
 calculate_outliers <- function(x) {
   Q1 <- quantile(x, 0.25, na.rm = TRUE)
@@ -455,7 +448,7 @@ In the exploratory data analysis, we observed distinct patterns within the film 
 
 After log transformations, the distributions of 'length' and 'votes' approached closer to normality but still exhibited skewness. The data set predominantly features action, drama, and comedy genres, with fewer romantic and short films. Notably, only 35% of movies are rated above 7.
 
-There is a medium positive correlation between log-transformed votes and length, suggesting films of longer duration may engage viewers more. Budget analyses indicate movies rated above 7 typically have higher budgets. Genre-wise, short and documentaries stand out with highest proportions of high-rated films, whereas romance, drama, and action genres show fewer films surpassing the rating threshold. Short films and animations are generally shorter, whereas romance tends to be longer. Despite uniform budget distribution across genres, action and documentaries exhibit slightly higher budgets. Lastly, romance genre films receive the most votes, while short films receive the fewest, indicating varying audience engagement levels by genre.
+There is a medium positive correlation between log-transformed votes and length, suggesting films of longer duration may engage viewers more. It is also shown that movies rated above 7 typically have higher budgets. Genre-wise, short and documentaries stand out with highest proportions of high-rated films, whereas romance, drama, and action genres show fewer films surpassing the rating threshold. Short films and animations are generally shorter, whereas romance tends to be longer. The budget across various genres does not vary significantly, with action and documentaries exhibit slightly higher budgets. Lastly, romance genre films receive the most votes, while short films receive the fewest, indicating varying audience engagement levels by genre.
 
 # Formal Analysis
 
@@ -496,7 +489,7 @@ glm_model_no_year_length <- glm(above_7 ~ votes_log + budget + genre,
 
 In this project, the modeling principle involved constructing and refining a series of logistic regression models to identify key factors influencing a movie's success, defined as achieving a rating above 7. The full model included all variables (except ID), offering a comprehensive baseline for analysis.
 
-Subsequent models were developed by applying log transformation and removing variables based on their statistical significance, assessed through p-values, and their impact on the model's overall performance. This iterative process aimed to streamline the model, removing less impactful variables while observing changes in performance metrics like accuracy, sensitivity, specificity, and the Area Under the Curve (AUC).
+Subsequent models were developed by applying log transformation and removing variables based on their statistical significance, assessed through p-values, and their impact on the model's overall performance. This iterative process aimed to streamline the model, removing less impactful variables while observing changes in performance metrics like accuracy, sensitivity, specificity, and AUC.
 
 ## Model Selection
 
@@ -519,7 +512,6 @@ evaluate_model <- function(model, test_data) {
   
   return(metrics)  # Return metrics for storage
 }
-# Assuming your models are named and your test_data is ready
 # Store metrics in a structured way
 metrics_list <- list()
 metrics_list[['Model 1']] <- evaluate_model(glm_model_full, test_data)
@@ -655,7 +647,7 @@ print(metrics_long_df)
 
 The classification threshold of 0.33, as observed from the plot, optimally balances accuracy, sensitivity, and specificity. This threshold reflects a strategic compromise, enhancing the model's ability to correctly identify films rated above and below 7, without heavily sacrificing one metric for another.
 
-Model 4, which utilizes length_log, budget, and genre as predictors, demonstrates strong predictive performance. With an accuracy of 89.23%, it effectively distinguishes between movies rated above and below 7. The model is equally balanced in terms of sensitivity (88.98%) and specificity (89.68%), indicating it is reliable in identifying both high-rated and lower-rated films. The Area Under the Curve (AUC) value of 0.9405 suggests excellent discrimination between the positive and negative classes. Furthermore, a Bayesian Information Criterion (BIC) of 941.4027 reflects the model's efficiency, balancing model complexity with fit to the data.
+Model 4, which utilizes length_log, budget, and genre as predictors, demonstrates strong predictive performance. With an accuracy of 89.23%, it effectively distinguishes between movies rated above and below 7. The model is equally balanced in terms of sensitivity (88.98%) and specificity (89.68%), indicating it is reliable in identifying both high-rated and lower-rated films. The AUC value of 0.9405 suggests good discrimination between the positive and negative classes. Furthermore, a BIC of 941.4027 reflects the model's efficiency, balancing model complexity with fit to the data.
 
 ## Model Interpretation
 
@@ -755,7 +747,7 @@ The DHARMa diagnostic plots for the generalized linear model indicate that the m
 
 # Conclusion
 
-Our comprehensive analysis has shed light on the influential dynamics between film attributes and audience ratings. Specifically, it has been observed that film length, budget, and genre play pivotal roles in determining a movie's rating. Notably, shorter films tend to receive higher ratings, highlighting the audience's preference for narrative conciseness and the ability to maintain engagement. Similarly, films with higher budgets are generally correlated with ratings above 7, indicating that substantial financial investment in production quality, star power, and marketing can significantly influence viewer perceptions and satisfaction. Among the various genres analyzed, short films and documentaries have demonstrated particularly high success rates, suggesting that niche audiences or the unique storytelling and educational aspects of these genres resonate well with viewers. On the other hand, genres such as drama and romance appear to face greater challenges in achieving high ratings, potentially due to genre-specific expectations or saturated market conditions.
+This analysis has shed light on the influential dynamics between film attributes and audience ratings. Specifically, it has been observed that film length, budget, and genre play pivotal roles in determining a movie's rating. Notably, shorter films tend to receive higher ratings, highlighting the audience's preference for narrative conciseness and the ability to maintain engagement. Similarly, films with higher budgets are generally correlated with ratings above 7, indicating that substantial financial investment in production quality, star power, and marketing can significantly influence viewer perceptions and satisfaction. Among the various genres analyzed, short films and documentaries have demonstrated particularly high success rates, suggesting that niche audiences or the unique storytelling and educational aspects of these genres resonate well with viewers. On the other hand, genres such as drama and animation appear to face greater challenges in achieving high ratings, potentially due to genre-specific expectations or saturated market conditions.
 
 These findings provide valuable insights into the multifaceted nature of film success. They suggest that filmmakers, producers, and studios should consider a holistic approach when planning new projects. By balancing the essential elements of film length, budget allocation, and genre selection, and aligning them with target audience preferences and market trends, filmmakers can optimize their strategies to enhance audience reception and increase the likelihood of producing critically acclaimed and commercially successful films.
 
@@ -765,7 +757,7 @@ These findings provide valuable insights into the multifaceted nature of film su
 This study highlights key factors influencing audience ratings: film length, budget, and genre. Findings suggest filmmakers should focus on concise storytelling, invest in production quality, and select genres wisely to enhance film success. This also impacts marketing strategies, advocating for targeted campaigns, especially for niche genres like documentaries.
 
 ## Limitation
-The study's limitations include reliance on viewer ratings as the sole success metric and a dataset that may not reflect all aspects of movie success. Additionally, the dynamic nature of audience preferences and unobserved variables like directorial style or societal trends could affect outcomes.
+The study's limitations include reliance on viewer ratings as the sole success metric and a data set that may not reflect all aspects of movie success. Additionally, the dynamic nature of audience preferences and unobserved variables like directorial style or societal trends could affect outcomes.
 
 ## Further Research
 Future research could extend to analyzing film success through both audience ratings and box office revenue, offering a comprehensive view of what defines success in the film industry. Additionally, examining subtleties within film genres—such as specific sub-genres, themes, or narrative structures—could uncover elements that significantly impact a film's success. This detailed analysis would help filmmakers and studios better align their projects with audience preferences and market trends, potentially leading to higher ratings and greater financial success.

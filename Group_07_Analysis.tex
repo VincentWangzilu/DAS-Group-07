@@ -199,7 +199,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, breakable, sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, sharp corners, interior hidden, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -234,18 +234,13 @@ production scales, enabling a comprehensive analysis that transcends
 specific market trends or cultural biases. By employing a generalized
 linear regression framework, we aim to predict the likelihood of a film
 achieving a rating above 7, transforming subjective notions of quality
-and appeal into quantifiable probabilities. The selection of variables
-such as `length', `budget', and `votes' is predicated on the hypothesis
-that these factors collectively encapsulate elements of narrative
-compactness, production quality, and audience engagement---each a
-potential predictor of a film's rating.
+and appeal into quantifiable probabilities.
 
-As we navigate through this project, the goal is to distill actionable
-insights that can guide filmmakers and studios in crafting content that
-resonates with viewers. Beyond its immediate application, this study
-contributes to the broader discourse on the quantification of artistic
-and entertainment value, marking a confluence of creativity and
-analytics.
+Through this project, the goal is to distill actionable insights that
+can guide filmmakers and studios in crafting content that resonates with
+viewers. Beyond its immediate application, this study contributes to the
+broader discourse on the quantification of artistic and entertainment
+value, marking a confluence of creativity and analytics.
 
 \hypertarget{methodology}{%
 \section{Methodology}\label{methodology}}
@@ -265,9 +260,8 @@ examining the distributions of key variables, identifying outliers, and
 assessing correlations.
 
 The analysis then employs a Generalized Linear Model (GLM), specifically
-logistic regression, to examine the influence of various film
-attributes---namely, length, budget, viewer engagement (votes), and
-genre---on the likelihood of a film receiving a rating above 7, which is
+logistic regression, to examine the influence of various film attributes
+on the likelihood of a film receiving a rating above 7, which is
 considered indicative of success. The model's predictive power and fit
 are assessed through accuracy, sensitivity, specificity, and the Area
 Under the Receiver Operating Characteristic (ROC) Curve (AUC) metrics.
@@ -278,12 +272,12 @@ sensitivity and specificity. This involves calculating performance
 metrics across different threshold values and selecting the one that
 provides the best compromise according to the project's objectives.
 
-The methodology also encompasses residual analysis to evaluate the
-model's assumptions and the fit to the data, ensuring the reliability
-and validity of the findings. Finally, based on the insights gained from
-the EDA and GLM analysis, strategic recommendations are formulated to
-guide filmmakers and producers in aligning their projects with the
-attributes associated with higher-rated films.
+The methodology also encompasses evaluation of the model's assumptions
+and the fit to the data, ensuring the reliability and validity of the
+findings. Finally, based on the insights gained from the EDA and GLM
+analysis, strategic recommendations are formulated to guide filmmakers
+and producers in aligning their projects with the attributes associated
+with higher-rated films.
 
 \hypertarget{exploratory-data-anlaysis}{%
 \section{Exploratory Data Anlaysis}\label{exploratory-data-anlaysis}}
@@ -397,13 +391,13 @@ romantic and short films. Notably, only 35\% of movies are rated above
 7.
 
 There is a medium positive correlation between log-transformed votes and
-length, suggesting films of longer duration may engage viewers more.
-Budget analyses indicate movies rated above 7 typically have higher
-budgets. Genre-wise, short and documentaries stand out with highest
-proportions of high-rated films, whereas romance, drama, and action
-genres show fewer films surpassing the rating threshold. Short films and
-animations are generally shorter, whereas romance tends to be longer.
-Despite uniform budget distribution across genres, action and
+length, suggesting films of longer duration may engage viewers more. It
+is also shown that movies rated above 7 typically have higher budgets.
+Genre-wise, short and documentaries stand out with highest proportions
+of high-rated films, whereas romance, drama, and action genres show
+fewer films surpassing the rating threshold. Short films and animations
+are generally shorter, whereas romance tends to be longer. The budget
+across various genres does not vary significantly, with action and
 documentaries exhibit slightly higher budgets. Lastly, romance genre
 films receive the most votes, while short films receive the fewest,
 indicating varying audience engagement levels by genre.
@@ -447,7 +441,7 @@ removing variables based on their statistical significance, assessed
 through p-values, and their impact on the model's overall performance.
 This iterative process aimed to streamline the model, removing less
 impactful variables while observing changes in performance metrics like
-accuracy, sensitivity, specificity, and the Area Under the Curve (AUC).
+accuracy, sensitivity, specificity, and AUC.
 
 \hypertarget{model-selection}{%
 \subsection{Model Selection}\label{model-selection}}
@@ -509,11 +503,10 @@ demonstrates strong predictive performance. With an accuracy of 89.23\%,
 it effectively distinguishes between movies rated above and below 7. The
 model is equally balanced in terms of sensitivity (88.98\%) and
 specificity (89.68\%), indicating it is reliable in identifying both
-high-rated and lower-rated films. The Area Under the Curve (AUC) value
-of 0.9405 suggests excellent discrimination between the positive and
-negative classes. Furthermore, a Bayesian Information Criterion (BIC) of
-941.4027 reflects the model's efficiency, balancing model complexity
-with fit to the data.
+high-rated and lower-rated films. The AUC value of 0.9405 suggests good
+discrimination between the positive and negative classes. Furthermore, a
+BIC of 941.4027 reflects the model's efficiency, balancing model
+complexity with fit to the data.
 
 \hypertarget{model-interpretation}{%
 \subsection{Model Interpretation}\label{model-interpretation}}
@@ -604,22 +597,22 @@ well-fitted to the data under the constraints of GLM assumptions.
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
-Our comprehensive analysis has shed light on the influential dynamics
-between film attributes and audience ratings. Specifically, it has been
-observed that film length, budget, and genre play pivotal roles in
-determining a movie's rating. Notably, shorter films tend to receive
-higher ratings, highlighting the audience's preference for narrative
-conciseness and the ability to maintain engagement. Similarly, films
-with higher budgets are generally correlated with ratings above 7,
-indicating that substantial financial investment in production quality,
-star power, and marketing can significantly influence viewer perceptions
-and satisfaction. Among the various genres analyzed, short films and
-documentaries have demonstrated particularly high success rates,
-suggesting that niche audiences or the unique storytelling and
-educational aspects of these genres resonate well with viewers. On the
-other hand, genres such as drama and romance appear to face greater
-challenges in achieving high ratings, potentially due to genre-specific
-expectations or saturated market conditions.
+This analysis has shed light on the influential dynamics between film
+attributes and audience ratings. Specifically, it has been observed that
+film length, budget, and genre play pivotal roles in determining a
+movie's rating. Notably, shorter films tend to receive higher ratings,
+highlighting the audience's preference for narrative conciseness and the
+ability to maintain engagement. Similarly, films with higher budgets are
+generally correlated with ratings above 7, indicating that substantial
+financial investment in production quality, star power, and marketing
+can significantly influence viewer perceptions and satisfaction. Among
+the various genres analyzed, short films and documentaries have
+demonstrated particularly high success rates, suggesting that niche
+audiences or the unique storytelling and educational aspects of these
+genres resonate well with viewers. On the other hand, genres such as
+drama and animation appear to face greater challenges in achieving high
+ratings, potentially due to genre-specific expectations or saturated
+market conditions.
 
 These findings provide valuable insights into the multifaceted nature of
 film success. They suggest that filmmakers, producers, and studios
@@ -647,7 +640,7 @@ documentaries.
 \subsection{Limitation}\label{limitation}}
 
 The study's limitations include reliance on viewer ratings as the sole
-success metric and a dataset that may not reflect all aspects of movie
+success metric and a data set that may not reflect all aspects of movie
 success. Additionally, the dynamic nature of audience preferences and
 unobserved variables like directorial style or societal trends could
 affect outcomes.

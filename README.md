@@ -4,9 +4,9 @@ This project aims to unveil the factors contributing to the success of movies, a
 
 ## Project Structure
 
-- `data/`: Contains the dataset used in the analysis.
-- `scripts/`: R scripts and R Markdown files for data preprocessing, exploratory data analysis (EDA), and statistical modeling.
-- `outputs/`: Generated reports and visualizations in HTML or PDF format.
+- `dataset07.csv`: Contains the dataset used in the analysis.
+- `Group_07_Analysis.qmd`: R scripts and Quarto file for data preprocessing, exploratory data analysis (EDA), and statistical modeling.
+- `Group_07_Analysis.pdf`: Generated reports and visualizations in PDF format.
 - `README.md`: This file, providing an overview of the project and instructions for replication.
 
 ## Data Description

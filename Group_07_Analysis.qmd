@@ -49,8 +49,13 @@ library(caret)
 library(pROC)
 ```
 
+
 ```{r}
 data <- read.csv("/Users/ziluwang/Documents/GitHub/DAS-Project2-Group7/dataset07.csv", na.strings = 'NA')
+```
+
+```{r}
+dim(data)
 ```
 
 ```{r}

@@ -11,15 +11,11 @@ format:
     fontsize: 11pt
     geometry: margin=1in
     linestretch: 1.5
-    citation_package: natbib
-    biblio-style: "apalike"
-    biblio-title: References
     keep-tex: true
     toc: true
     toc-depth: 3
     number-sections: true
     fig-caption: true
-    table-format: latex
 editor_options: 
   chunk_output_type: console
 execute:
@@ -79,7 +75,7 @@ The methodology of the project involves a systematic approach to understanding t
 
 An extensive Exploratory Data Analysis (EDA) is conducted to gain deeper insights into underlying patterns and relationships. This includes examining the distributions of key variables, identifying outliers, and assessing correlations.
 
-The analysis then employs a Generalized Linear Model (GLM), specifically logistic regression, to examine the influence of various film attributes on the likelihood of a film receiving a rating above 7, which is considered indicative of success. The model's predictive power and fit are assessed through accuracy, sensitivity, specificity, and the Area Under the Receiver Operating Characteristic (ROC) Curve (AUC) metrics.
+The analysis then employs a Generalized Linear Model (GLM), specifically logistic regression, to examine the influence of various film attributes on the likelihood of a film receiving a rating above 7, which is considered indicative of success. The model's predictive power and fit are assessed through accuracy, sensitivity, specificity, and AUC.
 
 To fine-tune the model, a series of candidate thresholds for classification are evaluated to identify the optimal balance between sensitivity and specificity. This involves calculating performance metrics across different threshold values and selecting the one that provides the best compromise according to the project's objectives.
 
@@ -129,11 +125,6 @@ data_summary_table
 ```
 
 ```{r}
-library(dplyr)
-library(gt)
-
-# Assuming 'data' is your dataframe
-
 # Calculate frequencies and percentages for 'genre'
 genre_summary <- data %>%
   group_by(genre) %>%
@@ -218,32 +209,9 @@ outlier_table <- as.data.frame(t(outlier_proportions), row.names = "Proportion o
 outlier_table
 ```
 
-```{r}
-# calculate_and_print_outliers <- function(x) {
-#   Q1 <- quantile(x, 0.25, na.rm = TRUE)
-#   Q3 <- quantile(x, 0.75, na.rm = TRUE)
-#   IQR <- Q3 - Q1
-#   lower_bound <- Q1 - 1.5 * IQR
-#   upper_bound <- Q3 + 1.5 * IQR
-#   outliers <- x[x < lower_bound | x > upper_bound]
-#   return(outliers)
-# }
-# 
-# # Apply the modified function only to 'length', 'budget', and 'votes' columns
-# selected_columns <- c("length", "budget", "votes")
-# list_outliers <- lapply(data[selected_columns], calculate_and_print_outliers)
-# 
-# # Print the actual outliers for each variable
-# list_outliers
-```
-
 ## Visualisation
 
 ```{r}
-# Load necessary libraries
-library(ggplot2)
-library(dplyr)
-
 # List of numeric variables and their respective titles and x-axis labels
 numeric_vars <- c("year", "length", "budget", "votes")
 titles <- c("Distribution of Years", "Distribution of Film Lengths",
@@ -308,10 +276,6 @@ grid.arrange(grobs = plot_list, ncol = 2)
 ```
 
 ```{r}
-# Load necessary libraries
-library(ggplot2)
-library(dplyr)
-
 # Bar plot for genre
 genre_plot <- ggplot(data, aes(x = genre)) +
   geom_bar(color = "black") +
@@ -325,8 +289,6 @@ above7_plot <- ggplot(data, aes(x = as.factor(above_7))) +  # Ensure above_7 is 
   theme_minimal() +
   labs(title = "Film Counts by Above 7", x = "Above 7", y = "Count")
 
-# Print the plots side by side
-library(gridExtra)
 grid.arrange(genre_plot, above7_plot, ncol = 2)
 
 ```
@@ -338,9 +300,6 @@ ggpairs(numeric_data) +
 ```
 
 ```{r}
-# Load necessary libraries
-library(ggplot2)
-
 # List of numeric variables for plotting
 numeric_vars <- c("year", "length", "budget", "votes")
 
@@ -357,16 +316,13 @@ for (i in 1:length(numeric_vars)) {
 }
 
 # Print the plots
-library(gridExtra)
 grid.arrange(grobs = plot_list, ncol = 2)
 
 ```
 
 ```{r}
 # Load necessary libraries
-library(ggplot2)
-library(dplyr)
-library(scales)  # Ensure this is loaded for the percent formatter
+library(scales)  # 
 
 # Convert the data into a suitable format for ggplot
 data_long <- data %>%
@@ -444,9 +400,9 @@ ggparcoord(data = data_for_plot,
 
 ## EDA Findings
 
-In the exploratory data analysis, we observed distinct patterns within the film data set. The length of films is right-skewed, with most under 100 minutes, but exceptions extending up to 399 minutes. Similarly, the 'votes' distribution is significantly right-skewed, highlighting a disparity in viewer engagement. Conversely, budgets appear nearly normally distributed, indicating diverse financial investments across films.
+In the exploratory data analysis, we observed distinct patterns within the film data set. The data set predominantly features action (29.24%), drama (28.66%), and comedy (24.38) genres, with fewer romantic (0.67%) and short films (4.44%). Notably, only 35% of movies are rated above 7. 
 
-After log transformations, the distributions of 'length' and 'votes' approached closer to normality but still exhibited skewness. The data set predominantly features action, drama, and comedy genres, with fewer romantic and short films. Notably, only 35% of movies are rated above 7.
+The length of films is right-skewed, with most under 100 minutes, but exceptions extending up to 399 minutes. Similarly, the 'votes' distribution is significantly right-skewed, highlighting a disparity in viewer engagement. After log transformations, the distributions of 'length' and 'votes' approached closer to normality but still exhibited skewness. Conversely, budgets appear nearly normally distributed, indicating diverse financial investments across films.
 
 There is a medium positive correlation between log-transformed votes and length, suggesting films of longer duration may engage viewers more. It is also shown that movies rated above 7 typically have higher budgets. Genre-wise, short and documentaries stand out with highest proportions of high-rated films, whereas romance, drama, and action genres show fewer films surpassing the rating threshold. Short films and animations are generally shorter, whereas romance tends to be longer. The budget across various genres does not vary significantly, with action and documentaries exhibit slightly higher budgets. Lastly, romance genre films receive the most votes, while short films receive the fewest, indicating varying audience engagement levels by genre.
 
@@ -487,7 +443,7 @@ glm_model_no_year_length <- glm(above_7 ~ votes_log + budget + genre,
                                family = binomial, data = train_data)
 ```
 
-In this project, the modeling principle involved constructing and refining a series of logistic regression models to identify key factors influencing a movie's success, defined as achieving a rating above 7. The full model included all variables (except ID), offering a comprehensive baseline for analysis.
+In this project, the modeling principle involved constructing and refining a series of logistic regression models to identify key factors influencing a movie's success, defined as achieving a rating above 7. The full model included all variables (except film_id), offering a comprehensive baseline for analysis.
 
 Subsequent models were developed by applying log transformation and removing variables based on their statistical significance, assessed through p-values, and their impact on the model's overall performance. This iterative process aimed to streamline the model, removing less impactful variables while observing changes in performance metrics like accuracy, sensitivity, specificity, and AUC.
 
@@ -663,7 +619,7 @@ summary(glm_model_no_year_votes)
 
     -   **Animation and Drama**: Compared to the baseline genre (action), animation and drama films are significantly less likely to be rated above 7.
     -   **Short, Comedy, and Documentary**: These genres show higher probability of receiving high ratings compared to action, suggesting they are generally well-received or cater to specific audience segments that rate them favorably.
-    -   **Romance**: This genre do not show significant effects, possibly due to a smaller sample size, less variation in ratings, or other model limitations.
+    -   **Romance**: This genre do not show significant effects, possibly due to a smaller sample size.
 
 ## Assumption Checking
 
@@ -753,11 +709,11 @@ These findings provide valuable insights into the multifaceted nature of film su
 
 # Discussion
 
-## Implications
+## Implication
 This study highlights key factors influencing audience ratings: film length, budget, and genre. Findings suggest filmmakers should focus on concise storytelling, invest in production quality, and select genres wisely to enhance film success. This also impacts marketing strategies, advocating for targeted campaigns, especially for niche genres like documentaries.
 
 ## Limitation
-The study's limitations include reliance on viewer ratings as the sole success metric and a data set that may not reflect all aspects of movie success. Additionally, the dynamic nature of audience preferences and unobserved variables like directorial style or societal trends could affect outcomes.
+One limitation of of this analysis is the imbalance of genres in the data set, which can potentially skew predictive modeling and result in biased outcomes, especially towards over-represented genres.
 
-## Further Research
-Future research could extend to analyzing film success through both audience ratings and box office revenue, offering a comprehensive view of what defines success in the film industry. Additionally, examining subtleties within film genres—such as specific sub-genres, themes, or narrative structures—could uncover elements that significantly impact a film's success. This detailed analysis would help filmmakers and studios better align their projects with audience preferences and market trends, potentially leading to higher ratings and greater financial success.
+## Future Research
+Future research could extend to analyzing film success through both audience ratings and box office revenue, offering a comprehensive view of what defines success in the film industry. Additionally, examining subtleties within film genres—such as specific castings, themes, or narrative structures—could uncover elements that significantly impact a film's success. This detailed analysis would help filmmakers and studios better align their projects with audience preferences and market trends, potentially leading to higher ratings and greater financial success.

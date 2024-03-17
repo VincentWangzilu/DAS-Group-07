@@ -199,7 +199,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, breakable, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -221,13 +221,13 @@ specifically focusing on the critical threshold of a rating above 7,
 often considered a benchmark for success in the industry.
 
 The inception of this analysis is rooted in the premise that a film's
-length, budget, viewer engagement (measured through votes), and genre
-hold significant sway over its overall reception. Traditionally, the
-entertainment industry has relied on anecdotal evidence or isolated case
-studies to gauge the potential success of film projects. However, this
-project leverages a Generalized Linear Model (GLM) to evaluate these
-factors, offering a more empirical basis for understanding cinematic
-success.
+year of release, length, budget, viewer engagement (measured through
+votes), and genre hold significant sway over its overall reception.
+Traditionally, the entertainment industry has relied on anecdotal
+evidence or isolated case studies to gauge the potential success of film
+projects. However, this project leverages a Generalized Linear Model
+(GLM) to evaluate these factors, offering a more empirical basis for
+understanding cinematic success.
 
 The data set comprises diverse films spanning various years, genres, and
 production scales, enabling a comprehensive analysis that transcends
@@ -462,8 +462,8 @@ Model 5      0.7222 0.9009 1192.5274
 
 Model 4 was chosen for further tuning due to its balance between
 simplicity and performance. Despite not having the absolute highest
-accuracy, it provides high sensitivity (0.9158) and decent specificity
-(0.7897), alongside a strong AUC of 0.9405, indicating good
+accuracy, it provides commendable sensitivity (0.9158) and decent
+specificity (0.7897), alongside a strong AUC of 0.9405, indicating good
 discriminative power. With a BIC of 941.4027, it suggests efficiency in
 balancing model fit with complexity. This makes Model 4 a strong
 candidate for detailed analysis and threshold optimization.
@@ -566,12 +566,12 @@ Number of Fisher Scoring iterations: 14
   \tightlist
   \item
     \textbf{Documentary}: Documentaries have the highest likelihood of
-    being rated above 7, 119.188 times more likely than action films.
-    This substantial likelihood suggests that documentaries' content
-    resonates strongly with audiences, making them the most successful
-    genre in this analysis.
+    being rated above 7 among genres, 119.188 times more likely than
+    action films. This substantial likelihood suggests that
+    documentaries' content resonates strongly with audiences, making
+    them the most successful genre in this analysis.
   \item
-    \textbf{Short and Comedy}: These genres show significant higher
+    \textbf{Short and Comedy}: These genres also show significant higher
     probability of receiving high ratings compared to action. Short
     films are 36.669 times more likely, and comedies are 14.374 times
     more likely than action films to receive ratings above 7, suggesting

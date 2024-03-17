@@ -29,7 +29,7 @@ execute:
 
 In the evolving landscape of cinematic entertainment, the question of what factors lead a film to be favorably received by audiences has intrigued producers, directors, and marketers alike. This project, titled "Behind the Curtain: Statistical Insights into Movie Success" embarks on a statistical journey to decipher the complex dynamics between various film attributes and their resulting viewer ratings, specifically focusing on the critical threshold of a rating above 7, often considered a benchmark for success in the industry.
 
-The inception of this analysis is rooted in the premise that a film's length, budget, viewer engagement (measured through votes), and genre hold significant sway over its overall reception. Traditionally, the entertainment industry has relied on anecdotal evidence or isolated case studies to gauge the potential success of film projects. However, this project leverages a Generalized Linear Model (GLM) to evaluate these factors, offering a more empirical basis for understanding cinematic success.
+The inception of this analysis is rooted in the premise that a film's year of release, length, budget, viewer engagement (measured through votes), and genre hold significant sway over its overall reception. Traditionally, the entertainment industry has relied on anecdotal evidence or isolated case studies to gauge the potential success of film projects. However, this project leverages a Generalized Linear Model (GLM) to evaluate these factors, offering a more empirical basis for understanding cinematic success.
 
 The data set comprises diverse films spanning various years, genres, and production scales, enabling a comprehensive analysis that transcends specific market trends or cultural biases. By employing a generalized linear regression framework, we aim to predict the likelihood of a film achieving a rating above 7, transforming subjective notions of quality and appeal into quantifiable probabilities.
 
@@ -509,7 +509,7 @@ summary_table <- summary_table[, c('Variables', setdiff(names(summary_table), 'V
 summary_table
 ```
 
-Model 4 was chosen for further tuning due to its balance between simplicity and performance. Despite not having the absolute highest accuracy, it provides high sensitivity (0.9158) and decent specificity (0.7897), alongside a strong AUC of 0.9405, indicating good discriminative power. With a BIC of 941.4027, it suggests efficiency in balancing model fit with complexity. This makes Model 4 a strong candidate for detailed analysis and threshold optimization.
+Model 4 was chosen for further tuning due to its balance between simplicity and performance. Despite not having the absolute highest accuracy, it provides commendable sensitivity (0.9158) and decent specificity (0.7897), alongside a strong AUC of 0.9405, indicating good discriminative power. With a BIC of 941.4027, it suggests efficiency in balancing model fit with complexity. This makes Model 4 a strong candidate for detailed analysis and threshold optimization.
 
 ## Model Tuning
 

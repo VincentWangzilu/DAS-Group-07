@@ -47,6 +47,7 @@ library(GGally)
 library(corrplot)
 library(caret)
 library(pROC)
+library(jtools)
 ```
 
 ```{r}
@@ -62,7 +63,7 @@ data <- read.csv("/Users/ziluwang/Documents/GitHub/DAS-Project2-Group7/dataset07
 ```
 
 ```{r}
-colSums(is.na(data)
+#colSums(is.na(data)
 ```
 
 ```{r}
@@ -407,7 +408,7 @@ ggparcoord(data = data_for_plot,
 
 ## EDA Findings
 
-In the exploratory data analysis, we observed distinct patterns within the film data set. The data set predominantly features action (29.24%), drama (28.66%), and comedy (24.38) genres, with fewer romantic (0.67%) and short films (4.44%). Notably, only 35% of movies are rated above 7. 
+In the exploratory data analysis, we observed distinct patterns within the film data set. The data set predominantly features action (29.24%), drama (28.66%), and comedy (24.38%) genres, with fewer romantic (0.67%) and short films (4.44%). Notably, only 35% of movies are rated above 7.
 
 The length of films is right-skewed, with most under 100 minutes, but exceptions extending up to 399 minutes. Similarly, the 'votes' distribution is significantly right-skewed, highlighting a disparity in viewer engagement. After log transformations, the distributions of 'length' and 'votes' approached closer to normality but still exhibited skewness. Conversely, budgets appear nearly normally distributed, indicating diverse financial investments across films.
 
@@ -618,14 +619,53 @@ Model 4, which utilizes length_log, budget, and genre as predictors, demonstrate
 summary(glm_model_no_year_votes)
 ```
 
-1.  **Length of Movies (length_log)**: There is a significant negative relationship between the log-transformed length of movies and their likelihood of being rated above 7. This suggests that longer movies are less likely to receive high ratings, potentially indicating viewer preferences for shorter films or perhaps an association with certain film types or genres that are longer but less popular.
+```{r}
+# Create sequences for log_length and budget
+length_seq <- seq(min(data_clean$length_log), max(data_clean$length_log), length.out = 100)
+budget_seq <- seq(min(data_clean$budget), max(data_clean$budget), length.out = 100)
 
-2.  **Budget (budget)**: The budget of a movie shows a significant positive association with the likelihood of being rated above 7. This might imply that higher-budget movies, which can afford better production quality, actors, and marketing, are more likely to be well-received by audiences.
+# Prepare data for plotting
+new_data_length <- expand.grid(length_log = length_seq, budget = mean(data_clean$budget), genre = levels(data_clean$genre))
+new_data_budget <- expand.grid(length_log = mean(data_clean$length_log), budget = budget_seq, genre = levels(data_clean$genre))
+
+# Generate predictions
+new_data_length$prob_above_7 <- predict(glm_model_no_year_votes, newdata = new_data_length, type = "response")
+new_data_budget$prob_above_7 <- predict(glm_model_no_year_votes, newdata = new_data_budget, type = "response")
+
+# Create the plots
+plot_length <- ggplot(new_data_length, aes(x = length_log, y = prob_above_7, color = genre)) +
+  geom_line() +
+  labs(x = "Log Length", y = "Probability of Rating > 7") +
+  theme_minimal() +
+  scale_color_viridis_d()
+
+plot_budget <- ggplot(new_data_budget, aes(x = budget, y = prob_above_7, color = genre)) +
+  geom_line() +
+  labs(x = "Budget", y = "") +
+  theme_minimal() +
+  scale_color_viridis_d() +
+  guides(color = FALSE) # Suppress the legend for the budget plot
+
+# Combine the plots side by side and keep only the left legend
+combined_plots <- plot_length + plot_budget + plot_layout(ncol = 2) 
+
+# Add a title and adjust the legend position to the left
+final_plot <- combined_plots & 
+  plot_annotation(title = "Probability of High Rating by Log Length and Budget across Genres") &
+  theme(legend.position = 'left', plot.title = element_text(hjust = 0.5))
+
+# Display the final combined plot
+final_plot
+```
+
+1.  **Length of Movies (length_log)**: There is a significant negative relationship between the log-transformed length of movies and their likelihood of being rated above 7, with each unit increase reducing the odds by 94% (Odds Ratio = 0.061). This suggests that longer movies are less likely to receive high ratings, potentially indicating viewer preferences for shorter films or perhaps an association with certain film types or genres that are longer but less popular.
+
+2.  **Budget (budget)**: The budget of a movie shows a significant positive association with the likelihood of being rated above 7, with each unit increase in budget increasing the odds of a high rating by 73% (Odds Ratio = 1.733). This might imply that higher-budget movies, which can afford better production quality, actors, and marketing, are more likely to be well-received by audiences.
 
 3.  **Genre**:
-
-    -   **Animation and Drama**: Compared to the baseline genre (action), animation and drama films are significantly less likely to be rated above 7.
-    -   **Short, Comedy, and Documentary**: These genres show higher probability of receiving high ratings compared to action, suggesting they are generally well-received or cater to specific audience segments that rate them favorably.
+    -   **Documentary**: Documentaries have the highest likelihood of being rated above 7 among genres, 119.188 times more likely than action films. This substantial likelihood suggests that documentaries' content resonates strongly with audiences, making them the most successful genre in this analysis.
+    -   **Short and Comedy**: These genres also show significant higher probability of receiving high ratings compared to action. Short films are 36.669 times more likely, and comedies are 14.374 times more likely than action films to receive ratings above 7, suggesting they are generally well-received or cater to specific audience segments that rate them favorably.
+    -   **Animation and Drama**: Compared to action, animation and drama genres are 80.2% and 92.2% less likely, respectively, to be rated above 7. This indicates that, despite their popularity, films in these genres face greater challenges in surpassing the threshold for perceived success, possibly due to differing audience expectations or the abundance of content within these categories.
     -   **Romance**: This genre do not show significant effects, possibly due to a smaller sample size.
 
 ## Assumption Checking
@@ -717,13 +757,13 @@ These findings provide valuable insights into the multifaceted nature of film su
 # Discussion
 
 ## Implication
+
 This study highlights key factors influencing audience ratings: film length, budget, and genre. Findings suggest filmmakers should focus on concise storytelling, invest in production quality, and select genres wisely to enhance film success. This also impacts marketing strategies, advocating for targeted campaigns, especially for niche genres like documentaries.
 
 ## Limitation
 
-Genre imbalance in a dataset can skew predictive modeling and result in biased outcomes, especially towards overrepresented genres. This leads to misinterpretation of results, reduced model generalization, and potential overfitting, undermining the model's effectiveness across diverse film types. Underrepresented genres suffer from insufficient data, leading to poor predictive accuracy and missed opportunities for insights. Addressing this imbalance is crucial for equitable and accurate analysis, ensuring that models capture a comprehensive view of factors contributing to movie success across all genres.
-
-One limitation of of this analysis is the imbalance of genres in the data set, which can potentially skew predictive modeling and result in biased outcomes, especially towards over-represented genres.
+One limitation of this analysis is the imbalance of genres in the data set, which can potentially skew predictive modeling and result in biased outcomes, especially towards over-represented genres.
 
 ## Future Research
+
 Future research could extend to analyzing film success through both audience ratings and box office revenue, offering a comprehensive view of what defines success in the film industry. Additionally, examining subtleties within film genres—such as specific castings, themes, or narrative structures—could uncover elements that significantly impact a film's success. This detailed analysis would help filmmakers and studios better align their projects with audience preferences and market trends, potentially leading to higher ratings and greater financial success.
